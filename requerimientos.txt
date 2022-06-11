@@ -1,0 +1,8 @@
+python packages:
+    pandas
+    tkinter
+    mutagen
+    numpy
+    math
+    os
+    sis
