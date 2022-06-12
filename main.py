@@ -31,11 +31,12 @@ from tkinter import filedialog
 #
 # window.mainloop()
 
-df = pd.read_excel('comercialeslunes13dejunio2022.xlsx')
-df2 = pd.read_excel('programaslunes13junio2022.xlsx')
+df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - LUNES FM.csv')
+df2 = pd.read_csv('programaslunes13junio2022 - Hoja 1.csv')
 programas, pausas, fecha = checaarchivos(df, df2)
 pausas = formatingpausas(pausas)
 programas = formatingprogram(programas)
+
 dolst(pausas, programas, fecha)
 
 
