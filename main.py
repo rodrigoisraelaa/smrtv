@@ -1,7 +1,7 @@
 import sys, os
 from metodos.formating import formatingpausas, formatingprogram
 from metodos.checaArchivos import checaarchivos
-from metodos.dolst import dolst
+from metodos.dolst import dolst, getdiamesano
 import pandas as pd
 from tkinter import *
 from tkinter import filedialog
@@ -36,7 +36,8 @@ df2 = pd.read_csv('programaslunes13junio2022 - Hoja 1.csv')
 programas, pausas, fecha = checaarchivos(df, df2)
 pausas = formatingpausas(pausas)
 programas = formatingprogram(programas)
-
+dia, mes, ano = getdiamesano(fecha)
+fecha = dia+mes+ano
 dolst(pausas, programas, fecha)
 
 

@@ -31,22 +31,38 @@ def printprogrma(fecha, raiz, programa, pausas):
     numerodecortes = int((duracionprograma - 2) / 15)
     dirpath = ''
     if programa[0, 4] == 'GRABADO':
-        dirpath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/' + dia + ' ' + mes + '/'
+        suprapath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/'
+        suprafiles = os.listdir(suprapath)
+        carpeta = ''
+        for x in suprafiles:
+            if dia in x:
+                carpeta = x
+        dirpath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/' + carpeta + '/'
         bloques = os.listdir(dirpath)
         cortesrequeridos = len(bloques) - 1
-        claves = ['0']
-        while cortesrequeridos < numerodecortes:
-            for i in range(2):
-                for clave in pausas[i, 1:]:
+        claves = []
+        horas = []
+        newcortes = []
+        if cortesrequeridos < numerodecortes:
+            for i in range(numerodecortes + 1):
+                corte = pausas[0, 1:]
+                horas.append(pausas[0, 0])
+                for clave in corte:
                     if clave != '0' and clave != 'P0' and clave != 'F0' and clave != '10' and clave != 'PP0' and clave \
                             != 'INE0' and clave != 'FE0' and clave != 'CO0' and clave != 'IN0' and clave != 'PR0':
                         claves.append(clave)
-            pausas = pausas[1:]
+                pausas = pausas[1:]
             numerodecortes = numerodecortes - 1
-            if len(claves) < len(pausas[0, 1:]):
-                while len(claves) < len(pausas[0, 1:]):
+            if len(claves) % len(pausas[0, 1:]) != 0:
+                while len(claves) % len(pausas[0, 1:]) != 0:
                     claves.append('0')
-            pausas[0, 1:] = claves
+            for x in range(cortesrequeridos+1):
+                if 5 != len(claves[5*x:5*(1+x)]):
+                    while 5 != len(claves[5*x:5*(1+x)]):
+                        claves.append('0')
+                newcortes.append([*[float(horas[-cortesrequeridos-1+x])], *claves[5*x:5*(1+x)]])
+            b = np.r_[newcortes, pausas]
+            pausas = np.array(b)
         if len(bloques) == 1:
             duracion = getlen(dirpath + bloques[0])
             with open(fecha + '.lst', 'a') as fp:
@@ -58,7 +74,7 @@ def printprogrma(fecha, raiz, programa, pausas):
             print('no hay bloques')
         else:
             bloques.sort()
-            for x in range(0, numerodecortes + 1):
+            for x in range(0, len(bloques)):
                 duracion = getlen(dirpath + bloques[x])
                 with open(fecha + '.lst', 'a') as fp:
                     fp.write("%s\t%s\n" % (duracion, (dirpath + bloques[x]).replace('/', '\\')))
@@ -66,41 +82,45 @@ def printprogrma(fecha, raiz, programa, pausas):
                     printcorte(fecha, raiz, pausas[0])
                     pausas = pausas[1:]
     elif programa[0, 4] == 'VIVO' and not programa[0, 1] == 'LA MAÑANERA AMLO':
-        dirpath = raiz + 'INSTITUCIONAL/VESTIDURAS/' + nombredeprograma + '/'
+        suprapath = raiz + 'INSTITUCIONAL/VESTIDURAS/'
+        suprafolders = os.listdir(suprapath)
+        nombredecarpeta = ''
+        for x in suprafolders:
+            if nombredeprograma in x:
+                nombredecarpeta = x
+        dirpath = raiz + 'INSTITUCIONAL/VESTIDURAS/' + nombredecarpeta + '/'
         vestiduras = os.listdir(dirpath)
         ENTRADA = ''
         SALIDA = ''
         ROMPE = ''
         IDA = ''
         REGRESO = ''
-
         for x in vestiduras:
-            if 'ENTRADA' in x:
+            if 'ENTRADA' in x.upper():
                 ENTRADA = x
                 break
         for x in vestiduras:
-            if 'SALIDA' in x:
+            if 'SALIDA' in x.upper():
                 SALIDA = x
                 break
         for x in vestiduras:
-            if 'REGRESO' in x:
+            if 'REGRESO' in x.upper():
                 REGRESO = x
                 break
         for x in vestiduras:
-            if 'IDA CORTE' in x:
+            if ('IDA CORTE' in x.upper()) | ('IDA A' in x.upper()):
                 IDA = x
                 break
         if len(IDA) == 0 and len(REGRESO) == 0:
             for x in vestiduras:
-                if 'ROMPE' in x:
+                if 'ROMPE' in x.upper():
                     ROMPE = x
                     break
-
+        if IDA == '':
+            IDA = ROMPE
+        if REGRESO == '':
+            REGRESO = ROMPE
         for x in range(numerodecortes + 1):
-            if IDA == '':
-                IDA = ROMPE
-            if REGRESO == '':
-                REGRESO = ROMPE
             if x == 0 and not ENTRADA == '':
                 duracion = getlen(dirpath + ENTRADA)
                 with open(fecha + '.lst', 'a') as fp:
@@ -142,7 +162,7 @@ def printprogrma(fecha, raiz, programa, pausas):
                 pausas = pausas[1:]
     elif 'CARPETA' in programa[0, 4]:
         for x in range(0, numerodecortes + 1):
-            if not programa[1, 0] == 0.998611111111111:
+            if not (programa[1, 0] == 0.998611111111111 and x == 3):
                 printcorte(fecha, raiz, pausas[0])
                 pausas = pausas[1:]
     elif programa[0, 4] == 'MUSICA SELECCIONADA':
@@ -170,9 +190,34 @@ def printprogrma(fecha, raiz, programa, pausas):
                         n = n + 1
                 with open(fecha + '.lst', 'a') as fp:
                     fp.write("%s\t%s\n" % (duracionrompe, rompecorte.replace('/', '\\')))
-                if programa[1, 0] == 0.998611111111111 and not x == 3:
+                if not (programa[1, 0] == 0.998611111111111 and x == 3):
                     printcorte(fecha, raiz, pausas[0])
                     pausas = pausas[1:]
+        if programa[0, 1] == 'Y YO QUE TENGO QUE VER CON':
+            suprapath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/'
+            suprafiles = os.listdir(suprapath)
+            carpeta = ''
+            for x in suprafiles:
+                if dia in x:
+                    carpeta = x
+            dirpath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/' + carpeta + '/'
+            rolas = os.listdir(dirpath)
+            rolas.sort()
+            rolasporcorte = int(len(rolas) / (numerodecortes + 1))
+            sobrante = len(rolas) % (numerodecortes + 1)
+            n = 0
+            for x in range(numerodecortes + 1):
+                numrolas = rolasporcorte
+                if sobrante > 0:
+                    numrolas = numrolas + 1
+                    sobrante = sobrante - 1
+                for y in range(numrolas):
+                    duracion = getlen(dirpath + rolas[n])
+                    with open(fecha + '.lst', 'a') as fp:
+                        fp.write("%s\t%s\n" % (duracion, (dirpath + rolas[n]).replace('/', '\\')))
+                        n = n + 1
+                printcorte(fecha, raiz, pausas[0])
+                pausas = pausas[1:]
 
     return pausas
 
