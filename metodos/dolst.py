@@ -29,20 +29,27 @@ def printprogrma(fecha, raiz, programa, pausas):
     horafinal = programa[-1, 0]
     duracionprograma = decimalaminutos(horafinal - horainicial)
     numerodecortes = int((duracionprograma - 2) / 15)
-    dirpath = ''
+    numbloques = numerodecortes + 1
+    bloques = 'a'
+    cortesrequeridos = numerodecortes
+    dirpath = 'a'
     if programa[0, 4] == 'GRABADO':
         suprapath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/'
         suprafiles = os.listdir(suprapath)
-        carpeta = ''
+        carpeta = 'a'
         for x in suprafiles:
             if dia in x:
                 carpeta = x
         dirpath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/' + carpeta + '/'
-        bloques = os.listdir(dirpath)
-        cortesrequeridos = len(bloques) - 1
-        claves = []
-        horas = []
-        newcortes = []
+        if (carpeta == 'a') | (not os.path.isdir(dirpath)):
+            print('no hay carpeta de ' + programa[0, 1] + ' del dia ' + dia)
+        else:
+            bloques = os.listdir(dirpath)
+            numbloques = len(bloques)
+            cortesrequeridos = len(bloques) - 1
+            claves = []
+            horas = []
+            newcortes = []
         if cortesrequeridos < numerodecortes:
             for i in range(numerodecortes + 1):
                 corte = pausas[0, 1:]
@@ -63,21 +70,22 @@ def printprogrma(fecha, raiz, programa, pausas):
                 newcortes.append([*[float(horas[-cortesrequeridos-1+x])], *claves[5*x:5*(1+x)]])
             b = np.r_[newcortes, pausas]
             pausas = np.array(b)
-        if len(bloques) == 1:
-            duracion = getlen(dirpath + bloques[0])
-            with open(fecha + '.lst', 'a') as fp:
-                fp.write("%s\t%s\n" % (duracion, (dirpath + bloques[0]).replace('/', '\\')))
+        if numbloques == 1:
+            if bloques != 'a':
+                duracion = getlen(dirpath + bloques[0])
+                with open(fecha + '.lst', 'a') as fp:
+                    fp.write("%s\t%s\n" % (duracion, (dirpath + bloques[0]).replace('/', '\\')))
             if not programa[1, 0] == 0.998611111111111:
                 printcorte(fecha, raiz, pausas[0])
                 pausas = pausas[1:]
-        elif len(bloques) == 0:
-            print('no hay bloques')
         else:
-            bloques.sort()
-            for x in range(0, len(bloques)):
-                duracion = getlen(dirpath + bloques[x])
-                with open(fecha + '.lst', 'a') as fp:
-                    fp.write("%s\t%s\n" % (duracion, (dirpath + bloques[x]).replace('/', '\\')))
+            if bloques != 'a':
+                bloques.sort()
+            for x in range(0, numbloques):
+                if bloques != 'a':
+                    duracion = getlen(dirpath + bloques[x])
+                    with open(fecha + '.lst', 'a') as fp:
+                        fp.write("%s\t%s\n" % (duracion, (dirpath + bloques[x]).replace('/', '\\')))
                 if not programa[1, 0] == 0.998611111111111:
                     printcorte(fecha, raiz, pausas[0])
                     pausas = pausas[1:]
@@ -108,7 +116,7 @@ def printprogrma(fecha, raiz, programa, pausas):
                 REGRESO = x
                 break
         for x in vestiduras:
-            if ('IDA CORTE' in x.upper()) | ('IDA A' in x.upper()):
+            if ('IDA' in x.upper()) and not ('SALIDA' in x.upper()):
                 IDA = x
                 break
         if len(IDA) == 0 and len(REGRESO) == 0:
