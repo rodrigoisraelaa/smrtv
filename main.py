@@ -31,12 +31,14 @@ from tkinter import filedialog
 #
 # window.mainloop()
 
-# df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - MIERCOLES.csv')
-# df2 = pd.read_csv('02 DEL 07 AL 13 JUNIO 2022 PROGRAMACION XHEREL 106-9 FM PARA RODRIGO.xlsx - Miercoles.csv')
+df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - MIERCOLES.csv')
+df2 = pd.read_csv('02 DEL 07 AL 13 JUNIO 2022 PROGRAMACION XHEREL 106-9 FM PARA RODRIGO.xlsx - Miercoles.csv')
 # df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - LUNES FM.csv')
 # df2 = pd.read_csv('programaslunes13junio2022 - Hoja 1.csv')
-df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - MARTES FM.csv')
-df2 = pd.read_csv('programasmartes14junio2022 - Hoja 1.csv')
+# df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - MARTES FM.csv')
+# df2 = pd.read_csv('programasmartes14junio2022 - Hoja 1.csv')
+# df2 = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - JUEVES.csv')
+# df = pd.read_csv('02 DEL 07 AL 13 JUNIO 2022 PROGRAMACION XHEREL 106-9 FM PARA RODRIGO.xlsx - Jueves.csv')
 programas, pausas, fecha = checaarchivos(df, df2)
 pausas = formatingpausas(pausas)
 programas = formatingprogram(programas)

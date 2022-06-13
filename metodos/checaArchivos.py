@@ -23,7 +23,6 @@ def checaarchivos(x1, x2):
     else:
         program = x2
         continuidad = x1
-
     dia1, mes1, ano1 = getdiamesano(continuidad.iloc[2, 0].replace(' ', '').replace('DE', '').upper())
     dia2, mes2, ano2 = getdiamesano(program.iloc[1, 1].replace(' ', '').replace('FECHA:', '').upper())
     Fecha1 = dia1 + mes1 + ano1

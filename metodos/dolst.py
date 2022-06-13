@@ -116,7 +116,7 @@ def printprogrma(fecha, raiz, programa, pausas):
                 REGRESO = x
                 break
         for x in vestiduras:
-            if ('IDA' in x.upper()) and not ('SALIDA' in x.upper()):
+            if ('IDA ' in x.upper()) and not ('SALIDA' in x.upper()):
                 IDA = x
                 break
         if len(IDA) == 0 and len(REGRESO) == 0:
@@ -150,7 +150,7 @@ def printprogrma(fecha, raiz, programa, pausas):
             if not programa[1, 0] == 0.998611111111111:
                 printcorte(fecha, raiz, pausas[0])
                 pausas = pausas[1:]
-    elif programa[0, 4] == 'HIMNO':
+    elif 'HIMNO' in programa[0, 4]:
         printhimno(fecha, raiz)
         printcorte(fecha, raiz, pausas[0])
         pausas = pausas[1:]
