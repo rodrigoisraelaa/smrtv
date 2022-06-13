@@ -8,6 +8,7 @@ from mutagen.mp3 import MP3
 
 
 def dolst(pausas, programas, fecha):
+    texttoreturn=[]
     cortesmadrugada = []
     raiz = 'y/'
     for x in [00, 0o1, 0o2, 0o3, 0o4, 0o5]:  # hace los cortes de madrugada
@@ -17,12 +18,12 @@ def dolst(pausas, programas, fecha):
     with open(fecha + '.lst', 'w') as fp:
         fp.write('500\n')
     while len(programas) > 0:
-        pausas = printprogrma(fecha, raiz, programas[0:2], pausas)
+        pausas = printprogrma(fecha, raiz, programas[0:2], pausas, texttoreturn)
         programas = programas[2:]
-    return 0
+    return texttoreturn
 
 
-def printprogrma(fecha, raiz, programa, pausas):
+def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
     dia, mes, ano = getdiamesano(fecha)
     nombredeprograma = programa[0, 1]
     horainicial = programa[0, 0]
@@ -42,7 +43,7 @@ def printprogrma(fecha, raiz, programa, pausas):
                 carpeta = x
         dirpath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/' + carpeta + '/'
         if (carpeta == 'a') | (not os.path.isdir(dirpath)):
-            print('no hay carpeta de ' + programa[0, 1] + ' del dia ' + dia)
+            texttoreturn.append('no hay carpeta de ' + programa[0, 1] + ' del dia ' + dia)
         else:
             bloques = os.listdir(dirpath)
             numbloques = len(bloques)

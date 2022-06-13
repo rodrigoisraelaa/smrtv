@@ -46,6 +46,7 @@ pausas = formatingpausas(pausas)
 programas = formatingprogram(programas)
 dia, mes, ano = getdiamesano(fecha)
 fecha = dia+mes+ano
-dolst(pausas, programas, fecha)
+a = dolst(pausas, programas, fecha)
+print(a)
 
 
