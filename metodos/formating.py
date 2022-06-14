@@ -1,7 +1,4 @@
 import numpy as np
-import math
-
-from datetime import datetime
 
 
 def formatingpausas(x):
