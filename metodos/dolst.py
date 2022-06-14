@@ -25,6 +25,8 @@ def dolst(pausas, programas, fecha):
 
 def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
     dia, mes, ano = getdiamesano(fecha)
+    if len(dia) == 1:
+        dia = '0' + dia
     nombredeprograma = programa[0, 1]
     horainicial = programa[0, 0]
     horafinal = programa[-1, 0]
@@ -34,23 +36,43 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
     bloques = 'a'
     cortesrequeridos = numerodecortes
     dirpath = 'a'
-    if programa[0, 4] == 'GRABADO':
-        suprapath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/'
-        suprafiles = os.listdir(suprapath)
-        carpeta = 'a'
-        for x in suprafiles:
-            if dia in x:
-                carpeta = x
-        dirpath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/' + carpeta + '/'
-        if (carpeta == 'a') | (not os.path.isdir(dirpath)):
-            texttoreturn.append('no hay carpeta de ' + programa[0, 1] + ' del dia ' + dia)
+    archivodeprograma = 'a'
+    archivodemes = 'a'
+    carpeta = 'a'
+    print(programa)
+    if 'GRABADO' in programa[0, 4]:
+        archivodeprogramas = raiz + 'Programas/'
+        for x in os.listdir(archivodeprogramas):
+            if nombredeprograma in x:
+                archivodeprograma = x
+        if archivodeprograma == 'a':
+            texttoreturn.append('no hay carpeta de ' + programa[0, 1])
         else:
-            bloques = os.listdir(dirpath)
-            numbloques = len(bloques)
-            cortesrequeridos = len(bloques) - 1
-            claves = []
-            horas = []
-            newcortes = []
+            archivodemeses = archivodeprogramas + archivodeprograma + '/'
+            for x in os.listdir(archivodemeses):
+                if mes + ' ' + ano in x:
+                    archivodemes = x
+            if archivodemes == 'a':
+                texttoreturn.append('no hay carpeta de ' + programa[0, 1] + ' del mes ' + mes + ' ' + ano)
+            else:
+                suprapath = archivodemeses + archivodemes + '/'
+                suprafiles = os.listdir(suprapath)
+                for x in suprafiles:
+                    if dia in x:
+                        carpeta = x
+                if carpeta == 'a':
+                    texttoreturn.append('no hay carpeta de ' + programa[0, 1] + ' del dia ' + dia + ' ' + mes)
+                else:
+                    dirpath = suprapath + carpeta + '/'
+                    bloques = os.listdir(dirpath)
+                    if len(bloques) == 0:
+                        texttoreturn.append('no hay bloques de ' + programa[0, 1] + ' del dia ' + dia + ' ' + mes)
+                    else:
+                        numbloques = len(bloques)
+                        cortesrequeridos = len(bloques) - 1
+                        claves = []
+                        horas = []
+                        newcortes = []
         if cortesrequeridos < numerodecortes:
             for i in range(numerodecortes + 1):
                 corte = pausas[0, 1:]

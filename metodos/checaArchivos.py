@@ -25,9 +25,8 @@ def checaarchivos(x1, x2):
         continuidad = x1
     dia1, mes1, ano1 = getdiamesano(continuidad.iloc[2, 0].replace(' ', '').replace('DE', '').upper())
     dia2, mes2, ano2 = getdiamesano(program.iloc[1, 1].replace(' ', '').replace('FECHA:', '').upper())
-    Fecha1 = dia1 + mes1 + ano1
-    Fecha2 = dia2 + mes2 + ano2
-
+    Fecha1 = dia1.replace('0', '') + mes1 + ano1
+    Fecha2 = dia2.replace('0', '') + mes2 + ano2
     if Fecha1 != Fecha2:
         quit('No tienen la misma fecha perri')
 
