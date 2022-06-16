@@ -5,6 +5,10 @@ from metodos.dolst import dolst, getdiamesano
 import pandas as pd
 from tkinter import *
 from tkinter import filedialog
+print("%x" % sys.maxsize, sys.maxsize > 2**32)
+print("%x" % sys.maxsize, sys.maxsize > 2**32)
+r = pd.read_csv('root.csv')
+root = str(r.columns[0])
 
 
 # def openFile():
@@ -18,7 +22,7 @@ from tkinter import filedialog
 #     programas, pausas, fecha = checaarchivos(df, df2)
 #     pausas = formatingpausas(pausas)
 #     programas = formatingprogram(programas)
-#     print(dolst(pausas, fecha))
+#     print(dolst(pausas, programas, fecha, root))
 # window = Tk()
 # window.geometry("500x500")
 # button = Button(text='Seleccionar archivo', command=openFile)
@@ -45,6 +49,6 @@ pausas = formatingpausas(pausas)
 programas = formatingprogram(programas)
 dia, mes, ano = getdiamesano(fecha)
 fecha = dia+mes+ano
-a = dolst(pausas, programas, fecha)
+a = dolst(pausas, programas, fecha, root)
 print(a)
 

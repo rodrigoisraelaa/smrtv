@@ -7,10 +7,10 @@ from mutagen.wave import WAVE
 from mutagen.mp3 import MP3
 
 
-def dolst(pausas, programas, fecha):
+def dolst(pausas, programas, fecha, root):
     texttoreturn=[]
     cortesmadrugada = []
-    raiz = 'y/'
+    raiz = root
     for x in [00, 0o1, 0o2, 0o3, 0o4, 0o5]:  # hace los cortes de madrugada
         for y in [00, 15, 30, 45]:
             cortesmadrugada.append([str((x + (y / 60)) / 24), '0', '0', '0', '0', '0'])
@@ -39,7 +39,6 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
     archivodeprograma = 'a'
     archivodemes = 'a'
     carpeta = 'a'
-    print(programa)
     if 'GRABADO' in programa[0, 4]:
         archivodeprogramas = raiz + 'Programas/'
         for x in os.listdir(archivodeprogramas):
@@ -269,7 +268,7 @@ def getdiamesano(fecha):
 
 
 def printcorte(fecha, raiz, pausa):
-    dirpath = 'y/INSTITUCIONAL/LISTAS/Horas'
+    dirpath = raiz + 'INSTITUCIONAL/LISTAS/Horas'
     subtring = formatinghora(pausa[0])
     stringtoprint = dirpath.replace('/', '\\') + '\\' + buscararchivo(dirpath, subtring)
     with open(fecha + '.lst', 'a') as fp:
