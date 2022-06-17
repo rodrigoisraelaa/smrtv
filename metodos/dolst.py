@@ -112,14 +112,17 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                     printcorte(fecha, raiz, pausas[0])
                     pausas = pausas[1:]
     elif programa[0, 4] == 'VIVO' and not programa[0, 1] == 'LA MAÑANERA AMLO':
-        suprapath = raiz + 'INSTITUCIONAL/VESTIDURAS/'
+        suprapath = raiz + 'Institucional/VESTIDURAS/'
         suprafolders = os.listdir(suprapath)
         nombredecarpeta = ''
         for x in suprafolders:
             if nombredeprograma in x:
                 nombredecarpeta = x
-        dirpath = raiz + 'INSTITUCIONAL/VESTIDURAS/' + nombredecarpeta + '/'
+        if nombredecarpeta == '':
+            texttoreturn.append('no hay carpeta de vestiduras de' + programa[0, 1])
+        dirpath = suprapath + nombredecarpeta + '/'
         vestiduras = os.listdir(dirpath)
+        print(vestiduras)
         ENTRADA = ''
         SALIDA = ''
         ROMPE = ''
@@ -200,7 +203,7 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
             dirpath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/' + dia + ' ' + mes + '/'
             rolas = os.listdir(dirpath)
             rolas.sort()
-            rompecorte = raiz + 'INSTITUCIONAL/VESTIDURAS/' + nombredeprograma + '/' + \
+            rompecorte = raiz + 'Institucional/VESTIDURAS/' + nombredeprograma + '/' + \
                          'ROMPE CORTE  LA HISTORIA DE LA RESISTENECIA.mp3'
             duracionrompe = getlen(rompecorte)
             rolasporcorte = int(len(rolas) / 4)
@@ -268,12 +271,12 @@ def getdiamesano(fecha):
 
 
 def printcorte(fecha, raiz, pausa):
-    dirpath = raiz + 'INSTITUCIONAL/LISTAS/Horas'
+    dirpath = raiz + 'Institucional/LISTAS/Horas'
     subtring = formatinghora(pausa[0])
     stringtoprint = dirpath.replace('/', '\\') + '\\' + buscararchivo(dirpath, subtring)
     with open(fecha + '.lst', 'a') as fp:
         fp.write("0\t%s\n" % stringtoprint)
-    path = raiz + 'INSTITUCIONAL/IMAGEN SONORA 2022/IDENTIFICADORES 2022/'
+    path = raiz + 'Institucional/IMAGEN SONORA 2022/IDENTIFICADORES 2022/'
     x = random.randint(len(os.listdir(path)))
     duracion = getlen(path + os.listdir(path)[x])
     with open(fecha + '.lst', 'a') as fp:
@@ -349,7 +352,7 @@ def printcorte(fecha, raiz, pausa):
         duracion = getlen(path + os.listdir(path)[x])
         with open(fecha + '.lst', 'a') as fp:
             fp.write("%s\t%s\n" % (duracion, (path + os.listdir(path)[x]).replace('/', '\\')))
-    path = raiz + 'INSTITUCIONAL/IMAGEN SONORA 2022/'
+    path = raiz + 'Institucional/IMAGEN SONORA 2022/'
     x = random.randint(len(os.listdir(path)))
     filename = os.listdir(path)[x]
     if os.path.isfile(path + filename) != 1:
