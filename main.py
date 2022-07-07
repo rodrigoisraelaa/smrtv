@@ -6,7 +6,14 @@ import pandas as pd
 from tkinter import *
 from tkinter import filedialog
 
-root = ''
+roottxt = 'roottxt.txt'
+
+global root
+if os.path.exists(roottxt):
+    with open(roottxt, 'r') as fp:
+        root = fp.readlines()[0]
+else:
+    root = ''
 
 
 def openFile():
@@ -14,23 +21,32 @@ def openFile():
     T.insert(END, filepath)
 
 
-def hacerLista():
+def hacerLista(root=root):
     df = pd.read_csv(T.get(first=0, last=1)[0])
     df2 = pd.read_csv(T.get(first=0, last=1)[1])
     programas, pausas, fecha = checaarchivos(df, df2)
     pausas = formatingpausas(pausas)
     programas = formatingprogram(programas)
-    print(dolst(pausas, programas, fecha, root+'/'))
+    if not root[-1] == '/':
+        root = root + '/'
+    toprin = dolst(pausas, programas, fecha, root)
+    if len(toprin) == 0:
+        T.insert(END, 'exito')
+    else:
+        for x in toprin:
+            T.insert(END, x)
 
 
 def seleccionarCarpeta():
     dir = filedialog.askdirectory()
     global root
     root = dir
+    with open(roottxt, 'w') as fp:
+        fp.write(root)
 
 
 window = Tk()
-window.geometry("500x500")
+window.geometry("1000x500")
 button = Button(text='Seleccionar archivo', command=openFile)
 button.pack()
 button2 = Button(text='Hacer lista', command=hacerLista)

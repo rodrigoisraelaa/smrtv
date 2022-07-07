@@ -8,7 +8,7 @@ from mutagen.mp3 import MP3
 
 
 def dolst(pausas, programas, fecha, root):
-    texttoreturn=[]
+    texttoreturn = []
     cortesmadrugada = []
     raiz = root
     for x in [00, 0o1, 0o2, 0o3, 0o4, 0o5]:  # hace los cortes de madrugada
@@ -16,9 +16,9 @@ def dolst(pausas, programas, fecha, root):
             cortesmadrugada.append([str((x + (y / 60)) / 24), '0', '0', '0', '0', '0'])
     pausas = np.concatenate((pausas, cortesmadrugada[1:]))
     with open(fecha + '.lst', 'w') as fp:
-        fp.write('500\n')
+        fp.write('2000\n')
     while len(programas) > 0:
-        pausas = printprogrma(fecha, raiz, programas[0:2], pausas, texttoreturn)
+        pausas, texttoreturn = printprogrma(fecha, raiz, programas[0:2], pausas, texttoreturn)
         programas = programas[2:]
     return texttoreturn
 
@@ -85,11 +85,11 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
             if len(claves) % len(pausas[0, 1:]) != 0:
                 while len(claves) % len(pausas[0, 1:]) != 0:
                     claves.append('0')
-            for x in range(cortesrequeridos+1):
-                if 5 != len(claves[5*x:5*(1+x)]):
-                    while 5 != len(claves[5*x:5*(1+x)]):
+            for x in range(cortesrequeridos + 1):
+                if 5 != len(claves[5 * x:5 * (1 + x)]):
+                    while 5 != len(claves[5 * x:5 * (1 + x)]):
                         claves.append('0')
-                newcortes.append([*[float(horas[-cortesrequeridos-1+x])], *claves[5*x:5*(1+x)]])
+                newcortes.append([*[float(horas[-cortesrequeridos - 1 + x])], *claves[5 * x:5 * (1 + x)]])
             b = np.r_[newcortes, pausas]
             pausas = np.array(b)
         if numbloques == 1:
@@ -98,9 +98,9 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                 with open(fecha + '.lst', 'a') as fp:
                     fp.write("%s\t%s\n" % (duracion, (dirpath + bloques[0]).replace('/', '\\')))
             if not programa[1, 0] == 0.998611111111111:
-                printcorte(fecha, raiz, pausas[0])
+                texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                 pausas = pausas[1:]
-        else:
+        elif numbloques != 0:
             if bloques != 'a':
                 bloques.sort()
             for x in range(0, numbloques):
@@ -109,8 +109,10 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                     with open(fecha + '.lst', 'a') as fp:
                         fp.write("%s\t%s\n" % (duracion, (dirpath + bloques[x]).replace('/', '\\')))
                 if not programa[1, 0] == 0.998611111111111:
-                    printcorte(fecha, raiz, pausas[0])
+                    texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                     pausas = pausas[1:]
+        else:
+            texttoreturn.append('No hay bloques en la carpeta de ' + programa[0, 1] + ' en la carpeta de ' + dia + mes)
     elif programa[0, 4] == 'VIVO' and not programa[0, 1] == 'LA MAÑANERA AMLO':
         suprapath = raiz + 'Institucional/VESTIDURAS/'
         suprafolders = os.listdir(suprapath)
@@ -122,7 +124,6 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
             texttoreturn.append('no hay carpeta de vestiduras de' + programa[0, 1])
         dirpath = suprapath + nombredecarpeta + '/'
         vestiduras = os.listdir(dirpath)
-        print(vestiduras)
         ENTRADA = ''
         SALIDA = ''
         ROMPE = ''
@@ -173,30 +174,30 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                 with open(fecha + '.lst', 'a') as fp:
                     fp.write("%s\t%s\n" % (duracion, (dirpath + SALIDA).replace('/', '\\')))
             if not programa[1, 0] == 0.998611111111111:
-                printcorte(fecha, raiz, pausas[0])
+                texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                 pausas = pausas[1:]
     elif 'HIMNO' in programa[0, 4]:
         printhimno(fecha, raiz)
-        printcorte(fecha, raiz, pausas[0])
+        texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn, morelia='M')
         pausas = pausas[1:]
     elif programa[0, 1] == 'LA MAÑANERA AMLO':
         pausaespecial1 = np.concatenate((pausas[0], pausas[1, 1:], pausas[2, 1:], pausas[3, 1:]))
-        printcorte(fecha, raiz, pausaespecial1)
+        texttoreturn = printcorte(fecha, raiz, pausaespecial1, texttoreturn)
         with open(fecha + '.lst', 'a') as fp:
             fp.write("%s\t%s\n" % ('-1', '.stop'))
         pausas = pausas[4:]
         pausaespecial2 = np.concatenate(([pausas[3, 0]], pausas[0, 1:], pausas[1, 1:], pausas[2, 1:], pausas[3, 1:]))
-        printcorte(fecha, raiz, pausaespecial2)
+        texttoreturn = printcorte(fecha, raiz, pausaespecial2, texttoreturn)
         pausas = pausas[4:]
     elif programa[0, 4] == 'MUSICA' and programa[0, 5] == 'ARBOL DE MUSICA':
         for x in range(numerodecortes + 1):
             if not programa[1, 0] == 0.998611111111111 and not len(pausas) == 0:
-                printcorte(fecha, raiz, pausas[0])
+                texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                 pausas = pausas[1:]
     elif 'CARPETA' in programa[0, 4]:
         for x in range(0, numerodecortes + 1):
             if not (programa[1, 0] == 0.998611111111111 and x == 3):
-                printcorte(fecha, raiz, pausas[0])
+                texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                 pausas = pausas[1:]
     elif programa[0, 4] == 'MUSICA SELECCIONADA':
         if programa[0, 1] == 'MUSICA RESISTENCIA':
@@ -224,7 +225,7 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                 with open(fecha + '.lst', 'a') as fp:
                     fp.write("%s\t%s\n" % (duracionrompe, rompecorte.replace('/', '\\')))
                 if not (programa[1, 0] == 0.998611111111111 and x == 3):
-                    printcorte(fecha, raiz, pausas[0])
+                    texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                     pausas = pausas[1:]
         if programa[0, 1] == 'Y YO QUE TENGO QUE VER CON':
             suprapath = raiz + 'Programas/' + nombredeprograma + '/' + mes + ' ' + ano + '/'
@@ -249,10 +250,10 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                     with open(fecha + '.lst', 'a') as fp:
                         fp.write("%s\t%s\n" % (duracion, (dirpath + rolas[n]).replace('/', '\\')))
                         n = n + 1
-                printcorte(fecha, raiz, pausas[0])
+                texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                 pausas = pausas[1:]
 
-    return pausas
+    return pausas, texttoreturn
 
 
 def getdiamesano(fecha):
@@ -270,84 +271,106 @@ def getdiamesano(fecha):
     return dia, mes, ano
 
 
-def printcorte(fecha, raiz, pausa):
+def printcorte(fecha, raiz, pausa, texttoprint, morelia=None):
     dirpath = raiz + 'Institucional/LISTAS/Horas'
     subtring = formatinghora(pausa[0])
     stringtoprint = dirpath.replace('/', '\\') + '\\' + buscararchivo(dirpath, subtring)
     with open(fecha + '.lst', 'a') as fp:
         fp.write("0\t%s\n" % stringtoprint)
     path = raiz + 'Institucional/IMAGEN SONORA 2022/IDENTIFICADORES 2022/'
-    x = random.randint(len(os.listdir(path)))
-    duracion = getlen(path + os.listdir(path)[x])
+    if morelia == 'M':
+        for d in os.listdir(path):
+            if 'MORELIA' in d.upper():
+                x = path + d
+    else:
+        y = random.randint(len(os.listdir(path)))
+        x = path + os.listdir(path)[y]
+    duracion = getlen(x)
     with open(fecha + '.lst', 'a') as fp:
-        fp.write("%s\t%s\n" % (duracion, (path + os.listdir(path)[x]).replace('/', '\\')))
+        fp.write("%s\t%s\n" % (duracion, x.replace('/', '\\')))
         fp.write("-1\t.time\n")
     n = 0
     for clave in pausa[1:]:
         if clave != '0' and clave != 'P0' and clave != 'F0' and clave != '10' and clave != 'PP0' and clave \
                 != 'INE0' and clave != 'FE0' and clave != 'CO0' and clave != 'IN0' and clave != 'PR0':
             path = raiz + 'COMERCIALIZACION/'
-            if 'PP' in clave:
+            if 'PP' == clave[:2]:
                 n = n + 1
                 path = path + 'INE - PP/PP/'
-                clave = clave + ' '
+                duracion = 0
                 for filename in os.listdir(path):
-                    if clave in filename:
+                    if clave in filename[:5]:
                         duracion = getlen(path + filename)
                         with open(fecha + '.lst', 'a') as fp:
                             fp.write("%s\t%s\n" % (duracion, (path + filename).replace('/', '\\')))
-            elif 'IN' in clave:
+                        break
+                if duracion == 0:
+                    texttoprint.append('no existe ' + clave)
+            elif 'IN' == clave[:2]:
                 n = n + 1
                 path = path + 'INE - PP/INE/'
-                clave = clave + ' '
+                duracion = 0
                 for filename in os.listdir(path):
-                    if clave in filename:
+                    if clave in filename[:5]:
                         duracion = getlen(path + filename)
                         with open(fecha + '.lst', 'a') as fp:
                             fp.write("%s\t%s\n" % (duracion, (path + filename).replace('/', '\\')))
-            elif 'FE' in clave:
+                        break
+                if duracion == 0:
+                    texttoprint.append('no existe ' + clave)
+            elif 'FE' == clave[:2]:
                 n = n + 1
                 path = path + 'FEDERALES/'
-                if len(clave) < 4:
-                    clave = clave[:2] + '0' + clave[2]
-                clave = clave + ' '
+                duracion = 0
                 for filename in os.listdir(path):
-                    if clave in filename:
+                    if clave in filename[:5]:
                         duracion = getlen(path + filename)
                         with open(fecha + '.lst', 'a') as fp:
                             fp.write("%s\t%s\n" % (duracion, (path + filename).replace('/', '\\')))
-            elif 'CO' in clave[0:3]:
+                        break
+                if duracion == 0:
+                    texttoprint.append('no existe ' + clave)
+            elif 'CO' == clave[:2]:
                 n = n + 1
                 path = path + 'COM/'
-                clave = clave + ' '
+                duracion = 0
                 for filename in os.listdir(path):
-                    if clave in filename:
+                    if clave in filename[:5]:
                         duracion = getlen(path + filename)
                         with open(fecha + '.lst', 'a') as fp:
                             fp.write("%s\t%s\n" % (duracion, (path + filename).replace('/', '\\')))
-            elif 'RTC' in clave:
+                        break
+                if duracion == 0:
+                    texttoprint.append('no existe ' + clave)
+            elif 'RT' == clave[:2]:
                 n = n + 1
                 path = path + 'RTC 5MIN/'
-                clave = clave[-2:].replace(' ', '')
-                clave = '0' + clave + ' '
+                duracion = 0
                 for filename in os.listdir(path):
-                    if clave in filename[0:4]:
+                    if clave in filename[:5]:
                         duracion = getlen(path + filename)
                         with open(fecha + '.lst', 'a') as fp:
                             fp.write("%s\t%s\n" % (duracion, (path + filename).replace('/', '\\')))
-            elif 'PR' in clave:
+                        break
+                if duracion == 0:
+                    texttoprint.append('no existe ' + clave)
+            elif 'PR' == clave[:2]:
                 n = n + 1
                 path = path + 'Promos/'
+                duracion = 0
                 for filename in os.listdir(path):
-                    if clave + ' ' in filename:
+                    if clave in filename[:5]:
                         duracion = getlen(path + filename)
                         with open(fecha + '.lst', 'a') as fp:
                             fp.write("%s\t%s\n" % (duracion, (path + filename).replace('/', '\\')))
+                        break
+                if duracion == 0:
+                    texttoprint.append('no existe ' + clave)
     if n == 0:
         path = raiz + 'COMERCIALIZACION/Promos/'
         x = random.randint(len(os.listdir(path)))
-        if os.listdir(path)[x][0] != 'P':
-            while os.listdir(path)[x][0] != 'P':
+        if os.listdir(path)[x][:2] != 'PR':
+            while os.listdir(path)[x][:2] != 'PR':
                 x = random.randint(len(os.listdir(path)))
         duracion = getlen(path + os.listdir(path)[x])
         with open(fecha + '.lst', 'a') as fp:
@@ -362,6 +385,7 @@ def printcorte(fecha, raiz, pausa):
     duracion = getlen(path + os.listdir(path)[x])
     with open(fecha + '.lst', 'a') as fp:
         fp.write("%s\t%s\n" % (duracion, (path + filename).replace('/', '\\')))
+    return texttoprint
 
 
 def printhimno(fecha, raiz):

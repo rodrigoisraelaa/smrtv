@@ -57,10 +57,11 @@ coverage.xml
 # Translations
 *.mo
 *.pot
-
+*.lst
+*.csv
 # Django stuff:
 *.log
-
+roottxt.txt
 # Sphinx documentation
 docs/_build/
 
