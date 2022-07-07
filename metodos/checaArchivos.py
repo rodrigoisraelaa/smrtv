@@ -1,13 +1,11 @@
 
-
-
 def getdiamesano(fecha):
-    meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMRE', 'OCTUBRE',
+    meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE',
              'NOVIEMBRE', 'DICIEMBRE']
     mes = '0'
     ano = fecha[-4:]
     for x in meses:
-        if x in fecha:
+        if x.upper() in fecha.upper():
             mes = x
             break
     dia = fecha[-len(ano) - len(mes) - 2:-len(ano) - len(mes)]

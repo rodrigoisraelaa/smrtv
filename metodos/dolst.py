@@ -44,6 +44,7 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
         for x in os.listdir(archivodeprogramas):
             if nombredeprograma in x:
                 archivodeprograma = x
+                break
         if archivodeprograma == 'a':
             texttoreturn.append('no hay carpeta de ' + programa[0, 1])
         else:
@@ -257,7 +258,7 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
 
 
 def getdiamesano(fecha):
-    meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMRE', 'OCTUBRE',
+    meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE',
              'NOVIEMBRE', 'DICIEMBRE']
     mes = '0'
     ano = fecha[-4:]
