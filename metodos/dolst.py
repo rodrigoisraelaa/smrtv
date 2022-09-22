@@ -39,7 +39,8 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
     archivodeprograma = 'a'
     archivodemes = 'a'
     carpeta = 'a'
-    if 'GRABADO' in programa[0, 4]:
+    print(programa)
+    if 'GRABADO' in programa[0, 4] and not programa[0, 1] == 'RESUMEN LA MAÑANERA':
         archivodeprogramas = raiz + 'Programas/'
         for x in os.listdir(archivodeprogramas):
             if nombredeprograma in x:
@@ -98,7 +99,7 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                 duracion = getlen(dirpath + bloques[0])
                 with open(fecha + '.lst', 'a') as fp:
                     fp.write("%s\t%s\n" % (duracion, (dirpath + bloques[0]).replace('/', '\\')))
-            if not programa[1, 0] == 0.998611111111111:
+            if not programa[1, 0] == 0.998611111111111 or x != numerodecortes:
                 texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                 pausas = pausas[1:]
         elif numbloques != 0:
@@ -109,7 +110,7 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                     duracion = getlen(dirpath + bloques[x])
                     with open(fecha + '.lst', 'a') as fp:
                         fp.write("%s\t%s\n" % (duracion, (dirpath + bloques[x]).replace('/', '\\')))
-                if not programa[1, 0] == 0.998611111111111:
+                if not programa[1, 0] == 0.998611111111111 or x != numerodecortes:
                     texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                     pausas = pausas[1:]
         else:
@@ -174,7 +175,7 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                 duracion = getlen(dirpath + SALIDA)
                 with open(fecha + '.lst', 'a') as fp:
                     fp.write("%s\t%s\n" % (duracion, (dirpath + SALIDA).replace('/', '\\')))
-            if not programa[1, 0] == 0.998611111111111:
+            if not programa[1, 0] == 0.998611111111111 or x != numerodecortes:
                 texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                 pausas = pausas[1:]
     elif 'HIMNO' in programa[0, 4]:
@@ -192,12 +193,12 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
         pausas = pausas[4:]
     elif programa[0, 4] == 'MUSICA' and programa[0, 5] == 'ARBOL DE MUSICA':
         for x in range(numerodecortes + 1):
-            if not programa[1, 0] == 0.998611111111111 and not len(pausas) == 0:
+            if (not programa[1, 0] == 0.998611111111111 or x != numerodecortes) and len(pausas) != 0:
                 texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                 pausas = pausas[1:]
     elif 'CARPETA' in programa[0, 4]:
         for x in range(0, numerodecortes + 1):
-            if not (programa[1, 0] == 0.998611111111111 and x == 3):
+            if not programa[1, 0] == 0.998611111111111 or x != numerodecortes:
                 texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                 pausas = pausas[1:]
     elif programa[0, 4] == 'MUSICA SELECCIONADA':
@@ -225,7 +226,7 @@ def printprogrma(fecha, raiz, programa, pausas, texttoreturn):
                         n = n + 1
                 with open(fecha + '.lst', 'a') as fp:
                     fp.write("%s\t%s\n" % (duracionrompe, rompecorte.replace('/', '\\')))
-                if not (programa[1, 0] == 0.998611111111111 and x == 3):
+                if not programa[1, 0] == 0.998611111111111 or x != numerodecortes:
                     texttoreturn = printcorte(fecha, raiz, pausas[0], texttoreturn)
                     pausas = pausas[1:]
         if programa[0, 1] == 'Y YO QUE TENGO QUE VER CON':
@@ -272,12 +273,16 @@ def getdiamesano(fecha):
     return dia, mes, ano
 
 
-def printcorte(fecha, raiz, pausa, texttoprint, morelia=None):
+def print_titulo_de_corte(raiz, pausa, fecha):
     dirpath = raiz + 'Institucional/LISTAS/Horas'
     subtring = formatinghora(pausa[0])
+    print(buscararchivo(dirpath, subtring))
     stringtoprint = dirpath.replace('/', '\\') + '\\' + buscararchivo(dirpath, subtring)
     with open(fecha + '.lst', 'a') as fp:
         fp.write("0\t%s\n" % stringtoprint)
+
+
+def print_identificador_de_corte(fecha, raiz, morelia):
     path = raiz + 'Institucional/IMAGEN SONORA 2022/IDENTIFICADORES 2022/'
     if morelia == 'M':
         for d in os.listdir(path):
@@ -289,12 +294,20 @@ def printcorte(fecha, raiz, pausa, texttoprint, morelia=None):
     duracion = getlen(x)
     with open(fecha + '.lst', 'a') as fp:
         fp.write("%s\t%s\n" % (duracion, x.replace('/', '\\')))
+
+
+def print_locucion_por_hora(fecha):
+    with open(fecha + '.lst', 'a') as fp:
         fp.write("-1\t.time\n")
+
+
+def print_comercializacion(fecha, raiz, pausa, texttoprint):
     n = 0
     for clave in pausa[1:]:
-        if clave != '0' and clave != 'P0' and clave != 'F0' and clave != '10' and clave != 'PP0' and clave \
-                != 'INE0' and clave != 'FE0' and clave != 'CO0' and clave != 'IN0' and clave != 'PR0':
+        if clave != '0' and clave != 'P0' and clave != 'F0' and clave != '10' and clave != 'PP0' and clave != 'INE0' and \
+                clave != 'FE0' and clave != 'CO0' and clave != 'IN0' and clave != 'PR0' and clave == clave:
             path = raiz + 'COMERCIALIZACION/'
+            print(clave)
             if 'PP' == clave[:2]:
                 n = n + 1
                 path = path + 'INE - PP/PP/'
@@ -375,7 +388,12 @@ def printcorte(fecha, raiz, pausa, texttoprint, morelia=None):
                 x = random.randint(len(os.listdir(path)))
         duracion = getlen(path + os.listdir(path)[x])
         with open(fecha + '.lst', 'a') as fp:
+            print(os.listdir(path)[x][:4])
             fp.write("%s\t%s\n" % (duracion, (path + os.listdir(path)[x]).replace('/', '\\')))
+    return texttoprint
+
+
+def print_promo_estacion(raiz, fecha):
     path = raiz + 'Institucional/IMAGEN SONORA 2022/'
     x = random.randint(len(os.listdir(path)))
     filename = os.listdir(path)[x]
@@ -386,6 +404,24 @@ def printcorte(fecha, raiz, pausa, texttoprint, morelia=None):
     duracion = getlen(path + os.listdir(path)[x])
     with open(fecha + '.lst', 'a') as fp:
         fp.write("%s\t%s\n" % (duracion, (path + filename).replace('/', '\\')))
+
+
+def print_patrocinador_de_hora(raiz, fecha):
+    path = raiz + 'COMERCIALIZACION/PERSONAJES HORAS/'
+    x = random.randint(len(os.listdir(path)))
+    filename = os.listdir(path)[x]
+    duracion = getlen(path + os.listdir(path)[x])
+    with open(fecha + '.lst', 'a') as fp:
+        fp.write("%s\t%s\n" % (duracion, (path + filename).replace('/', '\\')))
+
+
+def printcorte(fecha, raiz, pausa, texttoprint, morelia=None):
+    print_titulo_de_corte(raiz, pausa, fecha)
+    print_identificador_de_corte(fecha, raiz, morelia)
+    print_patrocinador_de_hora(raiz, fecha)
+    print_locucion_por_hora(fecha)
+    texttoprint = print_comercializacion(fecha, raiz, pausa, texttoprint)
+    print_promo_estacion(raiz, fecha)
     return texttoprint
 
 
@@ -415,7 +451,6 @@ def buscararchivo(dirpath, x):
     for filename in os.listdir(dirpath):
         if x in filename:
             return filename
-    # print(os.path.isdir(dirpath))
     return 0
 
 

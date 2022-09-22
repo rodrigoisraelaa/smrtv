@@ -1,5 +1,6 @@
 
 def getdiamesano(fecha):
+    print(fecha)
     meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE',
              'NOVIEMBRE', 'DICIEMBRE']
     mes = '0'

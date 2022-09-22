@@ -7,11 +7,12 @@ from tkinter import *
 from tkinter import filedialog
 
 roottxt = 'roottxt.txt'
-
 global root
 if os.path.exists(roottxt):
     with open(roottxt, 'r') as fp:
         root = fp.readlines()[0]
+        if not root[-1] == '/':
+            root = root + '/'
 else:
     root = ''
 
@@ -27,8 +28,6 @@ def hacerLista(root=root):
     programas, pausas, fecha = checaarchivos(df, df2)
     pausas = formatingpausas(pausas)
     programas = formatingprogram(programas)
-    if not root[-1] == '/':
-        root = root + '/'
     toprin = dolst(pausas, programas, fecha, root)
     if len(toprin) == 0:
         T.insert(END, 'exito')
@@ -58,20 +57,3 @@ T.pack()
 
 window.mainloop()
 
-# df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - MIERCOLES.csv')
-# df2 = pd.read_csv('02 DEL 07 AL 13 JUNIO 2022 PROGRAMACION XHEREL 106-9 FM PARA RODRIGO.xlsx - Miercoles.csv')
-# df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - VIERNES.csv')
-# df2 = pd.read_csv('02 DEL 07 AL 13 JUNIO 2022 PROGRAMACION XHEREL 106-9 FM PARA RODRIGO.xlsx - Viernes.csv')
-# # df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - LUNES FM.csv')
-# # df2 = pd.read_csv('programaslunes13junio2022 - Hoja 1.csv')
-# # df = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - MARTES FM.csv')
-# # df2 = pd.read_csv('programasmartes14junio2022 - Hoja 1.csv')
-# df2 = pd.read_csv('01 DEL 06 AL 13 JUNIO 2022 PARA RODRIGO.xlsx - DOMINGO FM.csv')
-# df = pd.read_csv('02 DEL 07 AL 13 JUNIO 2022 PROGRAMACION XHEREL 106-9 FM PARA RODRIGO.xlsx - Domingo.csv')
-# programas, pausas, fecha = checaarchivos(df, df2)
-# pausas = formatingpausas(pausas)
-# programas = formatingprogram(programas)
-# dia, mes, ano = getdiamesano(fecha)
-# fecha = dia+mes+ano
-# a = dolst(pausas, programas, fecha, root)
-# print(a)
